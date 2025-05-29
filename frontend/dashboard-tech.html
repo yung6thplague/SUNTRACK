@@ -1,0 +1,65 @@
+<!-- frontend/dashboard-tech.html -->
+
+<!-- Coloque este bloco de busca antes da lista/tabela de registros -->
+
+<div id="tech-search" style="margin-bottom: 1rem;">
+  <input type="text" id="searchName" placeholder="Buscar por nome" style="margin-right: 0.5rem;" />
+  <input type="text" id="searchId" placeholder="Buscar por ID" style="margin-right: 0.5rem;" />
+  <button id="btnSearch">Pesquisar</button>
+</div>
+
+<table id="results" border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Usuário</th>
+      <th>Data</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  document.getElementById('btnSearch').addEventListener('click', async () => {
+    const name = document.getElementById('searchName').value.trim();
+    const id = document.getElementById('searchId').value.trim();
+
+    let url = '/tech/installations?';
+    if (name) url += `name=${encodeURIComponent(name)}&`;
+    if (id) url += `id=${encodeURIComponent(id)}&`;
+
+    try {
+      const res = await fetch(url, { credentials: 'include' });
+      if (!res.ok) {
+        alert('Erro ao buscar instalações.');
+        return;
+      }
+      const data = await res.json();
+      const tbody = document.querySelector('#results tbody');
+      tbody.innerHTML = '';
+
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Nenhum registro encontrado.</td></tr>';
+        return;
+      }
+
+      data.forEach(inst => {
+        const date = new Date(inst.createdAt).toLocaleDateString();
+        tbody.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td>${inst._id}</td>
+            <td>${inst.user ? inst.user.name : '—'}</td>
+            <td>${date}</td>
+            <td>
+              <a href="/tech/installations/${inst._id}/certificate" target="_blank">Emitir Certificado</a>
+            </td>
+          </tr>
+        `);
+      });
+    } catch (err) {
+      alert('Erro de conexão.');
+      console.error(err);
+    }
+  });
+</script>

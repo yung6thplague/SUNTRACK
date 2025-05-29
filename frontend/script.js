@@ -1,5 +1,15 @@
 const formContainer = document.getElementById("formContainer");
 
+
+function decodeToken(token) {
+  try {
+    const [, payload] = token.split('.');
+    return JSON.parse(atob(payload));
+  } catch {
+    return null;
+  }
+}
+
 function showLogin() {
   formContainer.innerHTML = `
     <h1> SUNTRAK</h1>
@@ -33,7 +43,17 @@ function showLogin() {
 
       if (res.ok) {
         localStorage.setItem("token", data.token);
-        window.location.href = "dashboard.html";
+        const decoded = decodeToken(data.token);
+
+        if(!decoded || Date.now()/1000 > decoded.exp){
+          return alert("Token invalido ou expirado.");
+        }
+
+        if (decoded.role === "tech"){
+          window.location.href = 'dashboard-tech.html';
+        } else{
+          window.location.href = 'dashboard.html';
+        }
       } else {
         alert(data.message || "Erro no login.");
       }
@@ -49,6 +69,9 @@ function showSignup() {
     <p class="subtitle">Preenche os dados abaixo para te registares.</p>
     <form id="signupForm">
       <div class="input-group">
+        <input type="text" id="signupName" placeholder="Nome completo" required>
+      </div>
+      <div class="input-group">
         <input type="email" id="signupEmail" placeholder="Email" required>
       </div>
       <div class="input-group">
@@ -62,14 +85,15 @@ function showSignup() {
   document.getElementById("signupForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = document.getElementById("signupEmail").value;
+    const name     = document.getElementById("signupName").value;
+    const email    = document.getElementById("signupEmail").value;
     const password = document.getElementById("signupPassword").value;
 
     try {
       const res = await fetch("http://localhost:3000/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ name, email, password })
       });
 
       const data = await res.json();
@@ -86,10 +110,19 @@ function showSignup() {
   });
 }
 
+
 function showDashboard(){
   formContainer.innerHTML = `
     <h1>🌞 Painel do Utilizador</h1>
     <p class="subtitle">Autenticado com sucesso!</p>
+    <button class="btn login" onclick="logout()">Sair</button>
+  `;
+}
+
+function showTechDashboard() {
+  formContainer.innerHTML = `
+    <h1>🔧 Painel do Técnico</h1>
+    <p class="subtitle">Área reservada para técnicos.</p>
     <button class="btn login" onclick="logout()">Sair</button>
   `;
 }

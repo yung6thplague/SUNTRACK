@@ -13,12 +13,19 @@ exports.login = async (req, res) => {
         if (!valid) return res.status(401).json({ message: "Credenciais inválidas" });
 
         const token = jwt.sign(
-            { userId: user._id },
+            { userId: user._id, role: user.role },
             "yung6thplague", // token secreto
             { expiresIn: "1h" }
         );
 
-        res.json({ token });
+        let dashboardPath 
+        if(user.role == "tech"){
+            dashboardPath = '/dashboard-tech.html'
+        } else {
+            dashboardPath = '/dashboard.html'
+        }
+
+        res.json({ token, dashboardPath });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Erro interno no servidor" });
@@ -27,7 +34,7 @@ exports.login = async (req, res) => {
 
 
 exports.signup = async (req, res) => {
-    const { email, password } = req.body;
+    const { name, email, password } = req.body;
 
     try {
         const existingUser = await User.findOne({ email });
@@ -37,7 +44,7 @@ exports.signup = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = new User({ email, password: hashedPassword });
+        const newUser = new User({name, email, password: hashedPassword, role: 'user' });
         await newUser.save();
 
         res.status(201).json({ message: "Utilizador registado com sucesso" });
