@@ -62,4 +62,30 @@
       console.error(err);
     }
   });
+  const fakeData = [
+  {
+    _id: "1",
+    user: { name: "Maria Energética" },
+    createdAt: "2025-05-01T10:00:00Z"
+  },
+  {
+    _id: "2",
+    user: { name: "Pedro Solar" },
+    createdAt: "2025-05-15T15:30:00Z"
+  }
+];
+
+const tbody = document.querySelector('#results tbody');
+fakeData.forEach(inst => {
+  const date = new Date(inst.createdAt).toLocaleDateString();
+  tbody.insertAdjacentHTML('beforeend', `
+    <tr>
+      <td>${inst._id}</td>
+      <td>${inst.user.name}</td>
+      <td>${date}</td>
+      <td><a href="#">Emitir Certificado</a></td>
+    </tr>
+  `);
+});
+
 </script>

@@ -14,6 +14,16 @@ mongoose.connect("mongodb+srv://admin:admin@suntrack.b8p1vki.mongodb.net/")
 
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/installations", require("./routes/routeInstallation"));
-app.get('/tech/installations', ensureTech, installationController.listInstallations);
+app.get('/tech/installations', ensureTech, installationController.getUserInstallations);
+
+
+const certificadosRoute = require('./routes/certificados');
+app.use('/tech/certificados', certificadosRoute);
+const techRoutes = require('./routes/tech');
+app.use('/tech', techRoutes);
+
+app.use("/api", require("./routes/production"));
+
+
 const PORT = 3000;
 app.listen(PORT, () => console.log("Server ON"));

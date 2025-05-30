@@ -50,9 +50,9 @@ function showLogin() {
         }
 
         if (decoded.role === "tech"){
-          window.location.href = 'dashboard-tech.html';
+          window.location.href = 'tecnico.html';
         } else{
-          window.location.href = 'dashboard.html';
+          window.location.href = 'user.html';
         }
       } else {
         alert(data.message || "Erro no login.");

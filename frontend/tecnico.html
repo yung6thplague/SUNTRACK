@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Técnico</title>
+  <link rel="stylesheet" href="tecnico.css">
+   <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="background"></div>
+
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+         <img src="logo.png" alt="Logo" />
+      </div>
+       <section class="tech-profile">
+  <img src="C:\Users\guga2\Desktop\tecnico.jpg" class="tech-photo">
+  <div class="tech-info">
+    <h2 id="techName">Gustavini Gordini</h2>
+    <p id="techEmail">tecnico@teste.com</p>
+  </div>
+</section>
+      <a href="index.html" class="btn logout-btn">
+  <i data-lucide="log-out"></i> Logout
+</a>
+    </nav>
+  </header>
+
+  <main class="info" id="certificados">
+    <h2>Certificação Técnica</h2>
+
+    <div id="tech-search" style="margin-bottom: 1rem;">
+      <input type="text" id="searchName" placeholder="Buscar por nome" style="margin-right: 0.5rem;" />
+      <input type="text" id="searchId" placeholder="Buscar por ID" style="margin-right: 0.5rem;" />
+      <button id="btnSearch">Pesquisar</button>
+    </div>
+
+    <table id="results" border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+
+<div class="upload-section">
+  <input type="text" id="searchName" placeholder="ID do utilizador" style="margin-right: 0.5rem;" />
+
+  <label for="pdfUpload" class="file-label">
+  <i data-lucide="folder" style="vertical-align: middle;"></i>
+</label>
+  <input type="file" id="pdfUpload" accept="application/pdf" />
+  <span id="fileNameDisplay">Nenhum ficheiro</span>
+
+  <button class="upload-btn">
+  <i data-lucide="upload" style="vertical-align: middle;"></i>
+</button>
+</div>
+
+
+
+
+
+      <thead>
+  <tr>
+    <th>ID</th>
+    <th>Usuário</th>
+    <th>Data</th>
+    <th>Morada</th>
+    <th>Painéis</th>
+    <th>Potência (kW)</th>
+    <th>Ações</th>
+  </tr>
+</thead>
+
+      <tbody></tbody>
+    </table>
+  </main>
+
+  <script>
+    document.getElementById('btnSearch').addEventListener('click', async () => {
+      const name = document.getElementById('searchName').value.trim();
+      const id = document.getElementById('searchId').value.trim();
+
+      let url = 'http://localhost:3000/tech/installations?';
+      if (name) url += `name=${encodeURIComponent(name)}&`;
+      if (id) url += `id=${encodeURIComponent(id)}&`;
+
+      try {
+        const res = await fetch(url, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+          }
+        });
+        if (!res.ok) {
+          alert('Erro ao buscar instalações.');
+          return;
+        }
+        const data = await res.json();
+        const tbody = document.querySelector('#results tbody');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Nenhum registro encontrado.</td></tr>';
+          return;
+        }
+
+        data.forEach(inst => {
+  const date = new Date(inst.createdAt).toLocaleDateString("pt-PT");
+
+  const id = inst._id?.substring(0, 6) || '—';
+  const nome = inst.userId?.name || inst.clientName || '—';
+  const morada = inst.address || '—';
+  const paineis = inst.panelCount !== undefined ? inst.panelCount : '—';
+  const potencia = inst.capacityKw !== undefined ? inst.capacityKw : '—';
+
+  document.querySelector('#results tbody').insertAdjacentHTML('beforeend', `
+    <tr>
+      <td>${id}</td>
+      <td>${nome}</td>
+      <td>${date}</td>
+      <td>${morada}</td>
+      <td>${paineis}</td>
+      <td>${potencia}</td>
+      <td><a href="#">Emitir Certificado</a></td>
+    </tr>
+  `);
+});
+
+      } catch (err) {
+        alert('Erro de conexão.');
+        console.error(err);
+      }
+    });
+  lucide.createIcons();
+
+  </script>
+
+
+<script>
+  document.getElementById('btnSearch').addEventListener('click', async () => {
+    const name = document.getElementById('searchName').value.trim();
+    const id = document.getElementById('searchId').value.trim();
+
+    let url = 'http://localhost:3000/tech/installations?';
+    if (name) url += `name=${encodeURIComponent(name)}&`;
+    if (id) url += `id=${encodeURIComponent(id)}&`;
+
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+      });
+
+      if (!res.ok) {
+        alert('Erro ao buscar instalações.');
+        return;
+      }
+
+      const data = await res.json();
+      const tbody = document.querySelector('#results tbody');
+      tbody.innerHTML = '';
+
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Nenhum registro encontrado.</td></tr>';
+        return;
+      }
+
+      data.forEach(inst => {
+        const date = new Date(inst.createdAt).toLocaleDateString();
+        tbody.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td>${inst._id.substring(0, 6)}</td>
+            <td>${inst.userId?.name || inst.clienName || '—'}</td>
+            <td>${date}</td>
+            <td><a href="/tech/installations/${inst._id}/certificate" target="_blank">Emitir Certificado</a></td>
+          </tr>
+        `);
+      });
+
+    } catch (err) {
+      alert('Erro de conexão.');
+      console.error(err);
+    }
+  });
+</script>
+
+
+
+  <script>
+
+  const tbody = document.querySelector('#results tbody');
+  fakeData.forEach(inst => {
+    const date = new Date(inst.createdAt).toLocaleDateString();
+    tbody.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td>${inst._id}</td>
+        <td>${inst.user.name}</td>
+        <td>${date}</td>
+        <td><a href="#">Emitir Certificado</a></td>
+      </tr>
+    `);
+  });
+</script>
+<script>
+  document.getElementById('btnSearch').addEventListener('click', async () => {
+    const name = document.getElementById('searchName').value.trim();
+    const id = document.getElementById('searchId').value.trim();
+
+    let url = 'http://localhost:3000/tech/installations?';
+    if (name) url += `name=${encodeURIComponent(name)}&`;
+    if (id) url += `id=${encodeURIComponent(id)}&`;
+
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+      });
+
+      if (!res.ok) {
+        alert('Erro ao buscar instalações.');
+        return;
+      }
+
+      const data = await res.json();
+      const tbody = document.querySelector('#results tbody');
+      tbody.innerHTML = '';
+
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhum registro encontrado.</td></tr>';
+        return;
+      }
+
+      data.forEach(inst => {
+        const date = new Date(inst.createdAt).toLocaleDateString("pt-PT");
+
+        const id = inst._id?.substring(0, 6) || '—';
+        const nome = inst.userId?.name || inst.clientName || '—';
+        const morada = inst.address || '—';
+        const paineis = inst.panelCount !== undefined ? inst.panelCount : '—';
+        const potencia = inst.capacityKw !== undefined ? inst.capacityKw : '—';
+
+        tbody.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td>${id}</td>
+            <td>${nome}</td>
+            <td>${date}</td>
+            <td>${morada}</td>
+            <td>${paineis}</td>
+            <td>${potencia}</td>
+            <td><a href="#">Emitir Certificado</a></td>
+          </tr>
+        `);
+      });
+
+    } catch (err) {
+      alert('Erro de conexão.');
+      console.error(err);
+    }
+  });
+</script>
+<script>
+  const fileInput = document.getElementById("pdfUpload");
+  const fileNameDisplay = document.getElementById("fileNameDisplay");
+
+  fileInput.addEventListener("change", () => {
+    fileNameDisplay.textContent = fileInput.files.length > 0
+      ? fileInput.files[0].name
+      : "Nenhum ficheiro";
+  });
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel do Utilizador</title>
+  <link rel="stylesheet" href="user.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="background"></div>
+
+  <header>
+    <nav class="navbar" style="justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div class="logo">
+          <img src="logo.png" alt="Logo" />
+        </div>
+        <div class="tech-profile">
+          <strong id="profileName">Utilizador</strong><br>
+          <small id="profileEmail">email@exemplo.com</small>
+        </div>
+      </div>
+      <a href="index.html" class="btn"><i data-lucide="log-out"></i> Logout</a>
+    </nav>
+  </header>
+
+  <main class="info">
+    <h2>Registar Instalação de Painéis Solares</h2>
+
+<form id="installationForm" class="form-installation">
+  <div class="form-group">
+    <div class="form-field">
+      <label for="installDate">Data da Instalação</label>
+      <input type="date" id="installDate" name="installDate" required />
+    </div>
+
+    <div class="form-field">
+      <label for="address">Morada</label>
+      <textarea id="address" name="address" rows="2" required></textarea>
+    </div>
+
+    <div class="form-field">
+      <label for="panelCount">Número de Painéis</label>
+      <input type="number" id="panelCount" name="panelCount" min="1" required />
+    </div>
+
+    <div class="form-field">
+      <label for="capacityKw">Potência (kW)</label>
+      <input type="number" id="capacityKw" name="capacityKw" step="0.01" min="0" required />
+    </div>
+  </div>
+
+  <button type="submit" class="btn2">Submeter</button>
+</form>
+
+    <div id="message" class="form-message"></div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Token não encontrado. Faz login primeiro.");
+      window.location.href = "index.html";
+    }
+
+    try {
+      const [, payload] = token.split(".");
+      const decoded = JSON.parse(atob(payload));
+      console.log("Token decodificado:", decoded);
+
+      // Mostrar dados no perfil
+      document.getElementById("profileName").textContent = decoded.name || "Utilizador";
+      document.getElementById("profileEmail").textContent = decoded.email || "—";
+    } catch (err) {
+      alert("Token inválido.");
+      localStorage.removeItem("token");
+      window.location.href = "index.html";
+    }
+
+   document.getElementById("installationForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const installDate = document.getElementById("installDate").value;
+  const address = document.getElementById("address").value.trim();
+  const panelCount = parseInt(document.getElementById("panelCount").value, 10);
+  const rawCapacity = document.getElementById("capacityKw").value;
+  const capacityKw = parseFloat(rawCapacity.replace(',', '.')); // 👈 aqui tá o fix mágico
+
+  try {
+    const res = await fetch("http://localhost:3000/api/installations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({ installDate, address, panelCount, capacityKw })
+    });
+
+    const data = await res.json();
+    const msgEl = document.getElementById("message");
+
+    if (res.ok) {
+      msgEl.textContent = "✅ Instalação registada com sucesso!";
+      this.reset();
+    } else {
+      msgEl.textContent = "⚠️ " + (data.message || "Erro ao registar.");
+    }
+  } catch (err) {
+    document.getElementById("message").textContent = "❌ Erro de rede.";
+    console.error(err);
+  }
+});
+
+  </script>
+</body>
+</html>
