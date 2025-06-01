@@ -51,9 +51,14 @@ function showLogin() {
 
         if (decoded.role === "tech"){
           window.location.href = 'tecnico.html';
-        } else{
+        } else if(decoded.role ==="user"){
           window.location.href = 'user.html';
+        }else{
+          window.location.href = "monitorizacao.html"
         }
+
+
+        
       } else {
         alert(data.message || "Erro no login.");
       }

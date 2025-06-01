@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Endpoint POST
+
 router.post('/', upload.single('certificado'), async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
@@ -35,7 +35,7 @@ router.post('/', upload.single('certificado'), async (req, res) => {
 
     if (!userId || !file) return res.status(400).json({ message: 'Faltam dados.' });
 
-    // Simplesmente responde (podes guardar na BD se quiseres)
+ 
     res.json({ message: 'Certificado recebido com sucesso.', path: file.path });
   } catch (err) {
     console.error(err);

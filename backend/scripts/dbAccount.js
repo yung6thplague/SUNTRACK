@@ -2,35 +2,60 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const prompt = require('prompt-sync')();
 const User = require('../models/User');
 
 async function run() {
   try {
     await mongoose.connect("mongodb+srv://admin:admin@suntrack.b8p1vki.mongodb.net/");
 
-    const name = "Carlos Tech da Silva";
-    const email = 'tecnico@teste.com';
-    const plainPassword = '123456';
+    console.log("==== Criar nova conta ====");
+
+    const name = prompt("Nome completo: ");
+    const email = prompt("Email: ");
+    const plainPassword = prompt("Senha: ", { echo: '*' });
+
+    console.log("\nEscolha o tipo de utilizador:");
+    console.log("1 - Cliente");
+    console.log("2 - Técnico");
+    console.log("3 - Gestor de Operações");
+
+    const roleChoice = prompt("Opção (1/2/3): ");
+
+    let role = "";
+    switch (roleChoice) {
+      case "1":
+        role = "user";
+        break;
+      case "2":
+        role = "tech";
+        break;
+      case "3":
+        role = "gestor";
+        break;
+      default:
+        console.log("Opção inválida. Abortar.");
+        process.exit(1);
+    }
 
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-    const techUser = new User({
+    const newUser = new User({
       name,
       email,
       password: hashedPassword,
-      role: 'tech'
+      role
     });
 
-    await techUser.save();
+    await newUser.save();
 
-    // Remove apenas o password da saída
-    const userSafe = techUser.toObject();
+    const userSafe = newUser.toObject();
     delete userSafe.password;
 
-    console.log('Conta TECH criada com sucesso:', userSafe);
+    console.log('\n✅ Conta criada com sucesso:\n', userSafe);
     process.exit(0);
   } catch (err) {
-    console.error('Erro ao criar conta TECH:', err);
+    console.error('\n❌ Erro ao criar conta:', err.message);
     process.exit(1);
   }
 }

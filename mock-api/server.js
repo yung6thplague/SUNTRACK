@@ -5,6 +5,7 @@ const app = express();
 app.use(cors());
 
 app.get("/production", (req, res) => {
+  const{clienteId} = req.params;
   const producao = parseFloat((Math.random() * 100).toFixed(2));
   const timestamp = new Date().toISOString();
 
