@@ -6,8 +6,11 @@ const {ensureTech} = require('./controllers/authController');
 const app = express();
 app.use(cors());
 app.use(express.json());
+const leiturasRoutes = require("./routes/leiturasRoutes");
+app.use("/api/leituras", leiturasRoutes);
 
-// conectar na db
+
+
 mongoose.connect("mongodb+srv://admin:admin@suntrack.b8p1vki.mongodb.net/")
     .then(() => console.log("MongoDB ON"))
     .catch(err => console.error("Erro ao ligar ao MongoDB: ", err));
@@ -15,6 +18,7 @@ mongoose.connect("mongodb+srv://admin:admin@suntrack.b8p1vki.mongodb.net/")
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/installations", require("./routes/routeInstallation"));
 app.get('/tech/installations', ensureTech, installationController.getUserInstallations);
+app.get('/tech/installations/:id/certificate', ensureTech, installationController.generateCertificate);
 
 
 const certificadosRoute = require('./routes/certificados');

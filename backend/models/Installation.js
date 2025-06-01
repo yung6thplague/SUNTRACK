@@ -7,6 +7,7 @@ const installationSchema = new mongoose.Schema({
   address: { type: String, required: true },
   panelCount: { type: Number, required: true },
   capacityKw: { type: Number, required: true },
+  validado:{type: Boolean, default:false }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Installation', installationSchema);

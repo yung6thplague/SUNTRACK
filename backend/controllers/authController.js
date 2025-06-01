@@ -33,8 +33,12 @@ exports.login = async (req, res) => {
     let dashboardPath;
     if (user.role === "tech") {
       dashboardPath = "/tecnico.html";
-    } else {
+    } 
+    if(user.role === "user") {
       dashboardPath = "/user.html";
+    }
+    if(user.role === "gestor") {
+      dashboardPath = "/monitorizacao.html";
     }
 
     res.json({ token, dashboardPath });

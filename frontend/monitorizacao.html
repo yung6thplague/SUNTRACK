@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Monitorização de Clientes</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .leitura-card {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Produção Solar - Monitorização</h1>
+
+  <input type="text" id="clienteId" placeholder="ID do Cliente" />
+  <button onclick="obterLeitura()">Obter Leitura</button>
+
+  <div id="resultado"></div>
+
+  <script>
+    async function obterLeitura() {
+      const clienteId = document.getElementById("clienteId").value;
+
+      const token = localStorage.getItem("token"); // <-- assumindo login feito
+      const resposta = await fetch(`http://localhost:3000/api/leituras/production/${clienteId}`, {
+        headers: { Authorization: "Bearer " + token }
+      });
+
+      const dados = await resposta.json();
+
+      if (dados.leitura) {
+        const { producaoKwH, consumoKwH, creditoGerado, dataLeitura } = dados.leitura;
+
+        document.getElementById("resultado").innerHTML = `
+          <div class="leitura-card">
+            <p><strong>Produção:</strong> ${producaoKwH} kWh</p>
+            <p><strong>Consumo:</strong> ${consumoKwH} kWh</p>
+            <p><strong>Crédito:</strong> ${creditoGerado} kWh</p>
+            <p><strong>Data:</strong> ${new Date(dataLeitura).toLocaleString()}</p>
+          </div>
+        `;
+      } else {
+        document.getElementById("resultado").innerText = "Erro ao buscar leitura.";
+      }
+    }
+  </script>
+
+</body>
+</html>
