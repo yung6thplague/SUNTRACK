@@ -20,4 +20,4 @@ document.getElementById("instalacaoForm").addEventListener("submit", async (e) =
   } else {
     alert(data.erro || "Erro ao registar.");
   }
-});
+}); 

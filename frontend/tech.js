@@ -17,7 +17,6 @@ document.getElementById("pesquisaForm").addEventListener("submit", async (e) => 
 
   console.log("Dados recebidos:", dados);
 
-
   let html = "";
   if (Array.isArray(dados)) {
     dados.forEach(inst => {
@@ -65,4 +64,4 @@ document.getElementById("pesquisaForm").addEventListener("submit", async (e) => 
       }
     });
   });
-});
+}); 
