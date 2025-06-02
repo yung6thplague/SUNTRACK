@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Monitorização de Clientes</title>
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .container-monitorizacao {
+      background: rgba(255 255 255 / 0.13);
+      backdrop-filter: saturate(180%) blur(30px);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 1200px;
+      box-shadow: 0 15px 60px rgba(31, 38, 135, 0.6);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      margin: 20px;
+    }
+
+    .cliente-card {
+      background: rgba(255 255 255 / 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .cliente-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(31, 38, 135, 0.3);
+    }
+
+    .cliente-card h3 {
+      color: white;
+      margin-bottom: 15px;
+      font-size: 1.2em;
+    }
+
+    .cliente-card p {
+      color: rgba(255, 255, 255, 0.9);
+      margin: 8px 0;
+    }
+
+    .cliente-card button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="title">Monitorização dos Clientes</div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </nav>
+
+  <main class="main-content">
+    <div id="clientes" class="container-monitorizacao"></div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        alert("Token não encontrado. Por favor, faça login.");
+        return;
+      }
+
+      fetch("http://localhost:3000/api/monitorizacao/clientes", {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Erro ao buscar dados: " + res.status);
+        return res.json();
+      })
+      .then(clientes => {
+        const container = document.getElementById("clientes");
+        clientes.forEach(cliente => {
+          const card = document.createElement("div");
+          card.className = "cliente-card";
+          card.innerHTML = `
+            <h3>${cliente.nome}</h3>
+            <p><strong>Email:</strong> ${cliente.email}</p>
+            <p><strong>Produção:</strong> ${cliente.producao} kWh</p>
+            <p><strong>Consumo:</strong> ${cliente.consumo} kWh</p>
+            <p><strong>Créditos:</strong> ${cliente.creditos}</p>
+            <button onclick="enviarEmail('${cliente.clienteId}')">📩 Enviar Email</button>
+          `;
+          container.appendChild(card);
+        });
+      })
+      .catch(err => {
+        console.error("Erro ao carregar clientes:", err);
+      });
+    });
+
+    function enviarEmail(clienteId) {
+      if (!confirm("Queres mesmo enviar o resumo mensal por e-mail?")) return;
+
+      fetch(`http://localhost:3000/api/leituras/enviar-email/${clienteId}`, {
+        method: "POST"
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message || "Email enviado.");
+      })
+      .catch(err => {
+        alert("Erro ao enviar e-mail.");
+        console.error(err);
+      });
+    }
+
+    function logout() {
+      sessionStorage.removeItem("token");
+      alert("Sessão terminada com sucesso.");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

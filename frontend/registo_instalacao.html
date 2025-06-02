@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registo de Instalação</title>
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+   
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    .form-installation {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .form-installation input {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      font-size: 16px;
+      backdrop-filter: blur(5px);
+    }
+
+    .form-installation input::placeholder {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .form-installation button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #00a2ff;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .form-installation button:hover {
+      background: #0088d6;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="title">Registar Instalação de Painéis Solares</div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </nav>
+
+  <div class="main-content">
+    <div class="form-installation">
+      <form id="instalacaoForm">
+        <input type="text" id="nomeCliente" placeholder="Nome do Cliente" required />
+        <input type="text" id="localizacao" placeholder="Localização" required />
+        <input type="number" id="dadosTecnicos" placeholder="Quantidade de painéis" required min="1" step="1" oninput="this.value = Math.abs(Math.floor(this.value))" />
+        <button type="submit">Registar</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      sessionStorage.removeItem("token");
+      alert("Sessão terminada com sucesso.");
+      window.location.href = "index.html";
+    }
+
+    document.getElementById('dadosTecnicos').addEventListener('input', function(e) {
+      let value = e.target.value;
+      value = value.replace(/[^0-9]/g, '');
+      value = Math.abs(parseInt(value) || 1);
+      e.target.value = value;
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if(window.lucide) lucide.replace();
+    });
+  </script>
+  <script src="registo_instalacao.js"></script>
+</body>
+</html>

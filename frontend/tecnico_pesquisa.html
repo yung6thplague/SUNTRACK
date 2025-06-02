@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pesquisa de Instalações</title>
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="title">Pesquisar Instalações</div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </nav>
+
+  <div class="main-content">
+    <div class="form-installation">
+      <form id="pesquisaForm">
+        <input type="text" id="nomePesquisa" placeholder="Nome do Cliente" />
+        <input type="text" id="idPesquisa" placeholder="ID da Instalação" />
+        <button type="submit">Pesquisar</button>
+      </form>
+      <div id="resultados"></div>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      sessionStorage.removeItem("token");
+      alert("Sessão terminada com sucesso.");
+      window.location.href = "index.html";
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      if(window.lucide) lucide.replace();
+    });
+  </script>
+  <script src="tecnico_pesquisa.js"></script>
+</body>
